@@ -2,11 +2,10 @@
 
 namespace App\Http\Models\Api;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Http\Models\BaseModel;
 
-class Mark extends Model
+class MarkModel extends BaseModel
 {
     protected $table = 'bd_mark_info';
     protected $primaryKey = 'mark_id';
-    public $timestamps = false;
 }

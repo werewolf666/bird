@@ -41,11 +41,11 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'host' => env('DB_HOST', '121.199.30.160'),
-            'port' => env('DB_PORT', '50052'),
-            'database' => env('DB_DATABASE', 'bird'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', '168168'),
+            'host' => env('DB_HOST', ''),
+            'port' => env('DB_PORT', ''),
+            'database' => env('DB_DATABASE', ''),
+            'username' => env('DB_USERNAME', ''),
+            'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
@@ -106,12 +106,15 @@ return [
 
     'redis' => [
 
-        'client' => 'predis',
+        // 'client' => 'predis',
+        'client' => 'phpredis',
 
         'default' => [
-            'host' => env('REDIS_HOST', '121.199.30.160'),
-            'password' => env('REDIS_PASSWORD', null),
-            'port' => env('REDIS_PORT', 50050),
+            'host' => '121.199.30.160',
+            'port' => 50001,
+            // 'host' => '112.74.161.13',
+            // 'port' => 52012,
+            'password' => null,
             'database' => 0,
         ],
 

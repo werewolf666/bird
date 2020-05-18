@@ -2,11 +2,10 @@
 
 namespace App\Http\Models\Api;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Http\Models\BaseModel;
 
-class Enroll extends Model
+class EnrollModel extends BaseModel
 {
     protected $table = 'bd_enroll_info';
     protected $primaryKey = 'enroll_id';
-    public $timestamps = false;
 }

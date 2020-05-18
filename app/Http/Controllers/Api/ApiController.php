@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Service\Api\ApiService;
 use Input;
+use App\Utils\Guid;
+use App\Utils\Logging;
 
 class ApiController extends Controller
 {
@@ -13,6 +15,7 @@ class ApiController extends Controller
     public function __construct(){
         if(null == $this->api_service) $this->api_service = new ApiService();
     }
+
 
     /**
      * 报名
@@ -32,42 +35,30 @@ class ApiController extends Controller
     {
         $result = $this->api_service->getEnroll();
         return response()->json($result);
+        // echo json_encode($result);
+        // print_r($result);
     }
 
     public function exportEnroll()
     {
-        $this->api();
-        $data['job_id']=$this->id();
-        $result = $this->api_service->exportEnroll($data);
-        return $this->result($result)->json()->response();
+        $job_id = Guid::get();
+        $result = $this->api_service->exportEnroll($job_id);
+        return response()->json($result);
     }
 
     public function checkFile()
     {
-        $this->api();
         try{
             $job_id = Input::input('job_id');
             if (empty($job_id)) {
-                return $this->result(['code'=>1,'msg'=>'params is null'])->json()->response();
+                return response()->json(['code'=>1,'msg'=>'job_id 不能为空']);
             }
-            $key = KeyUtils::EXPORT_ENROLL_LIST.':'.$job_id;
-            $r = $this->getRedis()->get($key);
-            if (empty($r)) {
-                 return $this->result(['code' => 2, 'msg' => 'file not prepare'])->json()->response();
-            }
-            $this->log(KeyUtils::EXPORT_ENROLL_LIST.":".$job_id,$r);
-            $r = json_decode($r,true);
-            if ($r['code'] != 0) {
-                //文件导出错误
-                return $this->result(['code' => 3, 'msg' => 'export error'])->json()->response();
-            }
-            $url = $r['url'];
-            $result = ['code'=>0,'msg'=>'ok','data'=>['url'=>$url]];
-            return $this->result($result)->json()->response();
+            $result = $this->api_service->checkFile($job_id);
+            return response()->json($result);
         }catch(\Exception $e){
-            $this->log("error checkFile", $e->getMessage());
+            Logging::log("error checkFile", $e->getMessage());
             $result = array('code' => 4,'msg' => $e->getMessage());
-            return $this->result($result)->json()->response();
+            return response()->json($result);
         }
     }
 

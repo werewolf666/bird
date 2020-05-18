@@ -1,0 +1,170 @@
+* {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    text-decoration: none;
+    font-size: 14px;
+}
+/*分页刷新样式 start*/
+#pages {
+    text-align: center;
+    margin-top: 25px;
+}
+
+#pages span {
+    margin-right: 8px;
+}
+#pages .page_num{
+    margin-left: 8px;
+}
+#pages .pageInfo {
+    margin-left: 10px;
+}
+
+#pages a {
+    margin-right: 8px;
+    height: 26px;
+    min-width: 26px;
+    padding: 0 3px;
+    width: auto;
+    text-align: center;
+    border: 1px solid #ddd;
+    line-height: 26px;
+    display: inline-block;
+    cursor: pointer;
+    color: #333;
+}
+
+#pages input {
+    width: 40px;
+    height: 26px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    color: #333;
+    margin-right: 8px;
+    outline: none;
+}
+#pages select{
+    width: 50px;
+    height: 28px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+}
+#pages a.curPage, #pages a.curPage:hover {
+    color: #fff;
+    background-color: #498FE1;
+    border-color: #498FE1;
+}
+
+#pages a:hover {
+    color: #333;
+    background-color: #f1f1f1;
+    border-color: #ddd;
+}
+
+#pages a.disabled, #pages a.disabled:hover {
+    color: #ccc;
+    cursor: not-allowed;
+    background-color: #fff;
+    border-color: #ddd;
+}
+#pages .page_total i{
+    color: #498FE1;
+    margin: 0 3px;
+    font-style: normal;
+}
+/*分页刷新样式 end*/
+
+
+/*分页ajax 样式 start*/
+.btn{
+    padding:0;
+    height: 26px;
+    width: 26px;
+    text-align: center;
+    line-height: 26px;
+    display: inline-block;
+    border:1px solid #ddd;
+    background: transparent;
+    margin-right:10px;
+}
+.active-nick{
+    color:#fff;
+    background-color: #498FE1;
+    border: 1px solid #498FE1;
+}
+.pagination-box{
+    color:#333;
+    font-size:14px;
+    text-align:center;
+    margin-top:10px;
+}
+.totalNum{
+    color:black;
+    font-size:14px;
+    margin:10px 10px;
+}
+.page-ipt-nick{
+    padding:0;
+    height: 24px;
+    width: 38px;
+    text-align: center;
+    line-height: 26px;
+    display: inline-block;
+    border:1px solid #ddd;
+    background: transparent;
+    margin-right:10px;
+    margin-left:10px;
+}
+
+.num-box-nick button{
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    outline:none;
+}
+
+.prev-btn ,.next-btn,.go-btn-nick{
+    cursor: pointer;
+}
+.prev-btn:hover ,.next-btn:hover,.go-btn-nick:hover{
+    color: #333;
+    background-color: #f1f1f1;
+    border-color: #ddd;
+}
+
+.num-box-nick button.active-nick,.num-box-nick button.active-nick:hover{
+    color: #fff;
+    background-color: #498FE1;
+    border-color: #498FE1;
+}
+.num-box-nick button:hover{
+    color: #333;
+    background-color: #f1f1f1;
+    border-color: #ddd;
+}
+.num-box-nick .noUse,.num-box-nick .noUse:hover {
+    color: #333;
+    cursor: not-allowed;
+    background-color: #fff;
+    border-color: #ddd;
+}
+.noUse{
+    border:none;
+    width:10px;
+    background-color: transparent;
+}
+.page_select{
+    width: 50px;
+    height: 28px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+}
+
+/*分页ajax 样式 end*/

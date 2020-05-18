@@ -2,11 +2,10 @@
 
 namespace App\Http\Models\Api;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Http\Models\BaseModel;
 
-class User extends Model
+class UserModel extends BaseModel
 {
     protected $table = 'bd_user_info';
     protected $primaryKey = 'user_id';
-    public $timestamps = false;
 }

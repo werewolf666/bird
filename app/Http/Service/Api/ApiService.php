@@ -1,14 +1,16 @@
 <?php
 
 namespace App\Http\Service\Api;
-use App\Http\Models\Api\Enroll;
-use App\Http\Models\Api\Mark;
-use App\Http\Models\Api\User;
+use App\Http\Models\Api\EnrollModel;
+use App\Http\Models\Api\MarkModel;
+use App\Http\Models\Api\UserModel;
 use App\Utils\KeyUtils;
 use App\Utils\Guid;
 use App\Utils\Logging;
+use Illuminate\Support\Facades\Redis;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as Wxlsx;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx as Rxlsx;
+use DB;
 
 class ApiService {
 
@@ -18,9 +20,9 @@ class ApiService {
 
     public function __construct(){
         //绑定模型
-        if (null == $this->enroll)$this->enroll = new Enroll();
-        if (null == $this->mark)$this->mark = new Mark();
-        if (null == $this->user)$this->user = new User();
+        if (null == $this->enroll)$this->enroll = new EnrollModel();
+        if (null == $this->mark)$this->mark = new MarkModel();
+        if (null == $this->user)$this->user = new UserModel();
     }
 
 
@@ -49,25 +51,25 @@ class ApiService {
 
     public function getEnroll()
     {
-        $data = $this->enroll->orderby('start_time','desc')->get();
+        $data = $this->enroll->orderby('start_time','desc')->get()->toArray();
         $total = count($data);
         return array('code'=>0,'msg'=>'ok','data'=>$data,'total'=>$total);
     }
 
-    public function exportList($data)
+    public function exportEnroll($job_id)
     {
         try{
-            $this->log('export_start_time',date('Y-m-d H:i:s'));
-    		$job_id = $data['job_id'];
-            $list = isset($this->getEnroll($data)['data'])?$this->getEnroll($data)['data']:[];
-    		$key = KeyUtils::EXPORT_ENROLL_LIST.":".$job_id;
-    		$config = $this->getConfigValue('export_enroll_addr');
-    		$dir = __DIR__.'/../../..'.'/download/bird/'.date('Y-m-d') .'/';
+            $job_id = $job_id;
+            $list = $this->getEnroll();
+            $list = isset($list['data'])?$list['data']:[];
+    		$key = KeyUtils::EXPORT_ENROLL_LIST.$job_id;
+    		$config = config('app.export_enroll_addr');
+    		$dir = base_path().'/storage/download/bird/'.date('Y-m-d') .'/';
     		if(!is_dir($dir)){
             	mkdir($dir, 0777, true);
         	}
             // STEP_1 加载模板
-            $template_file = __DIR__.'/../../..'.'/download/bird/bird_template.xlsx';
+            $template_file = base_path().'/storage/download/bird/bird_template.xlsx';
             $reader = new Rxlsx();
             $spreadsheet = $reader->load($template_file);
             $sheet = $spreadsheet->getActiveSheet();
@@ -83,20 +85,37 @@ class ApiService {
             }
             $file_name = $dir . $job_id . '.xlsx';
             $url =$config['domain'].$config['dir'].date('Y-m-d') .'/'.$job_id.'.xlsx';//下载目录(直接映射到download目录)
-            $this->log('file_info_'.$job_id,['file_name'=>$file_name,'url'=>$url]);
+            Logging::log('file_info_'.$job_id,['file_name'=>$file_name,'url'=>$url]);
             $writer = new Wxlsx($spreadsheet);
             $writer->save($file_name);
-            $result = array('code' => 0, 'msg' => 'ok', 'url' => $url);
-            $this->getRedis()->set($key, json_encode($result));
-            $this->log('export_end_time',date('Y-m-d H:i:s'));
+            Redis::set($key, json_encode(['code' => 0,'url'=>$url]));
+            $result = ['code'=>0,'msg'=>'ok','data'=>['job_id'=>$job_id]];
             return $result;
 
     	}catch(\Exception $e){
-            $this->log("error dealExportTicket", $e->getMessage());
-    		$key = KeyUtils::EXPORT_ENROLL_LIST.":".$data['job_id'];
-    		$result = ['code'=>3,'msg'=>$e->getMessage()];
-    		$this->getRedis()->set($key,json_encode($result));
+            Logging::log("error dealExportTicket", $e->getMessage());
+    		$key = KeyUtils::EXPORT_ENROLL_LIST.$job_id;
+            $result = ['code'=>3,'msg'=>$e->getMessage()];
+            Redis::set($key, json_encode($result));
             return $result;
     	}
+    }
+
+    public function checkFile($job_id)
+    {
+        $key = KeyUtils::EXPORT_ENROLL_LIST.$job_id;
+        $r = Redis::get($key);
+        if (empty($r)) {
+                return ['code' => 2, 'msg' => 'file not prepare'];
+        }
+        Logging::log(KeyUtils::EXPORT_ENROLL_LIST.":".$job_id,$r);
+        $r = json_decode($r,true);
+        if ($r['code'] != 0) {
+            //文件导出错误
+            return ['code' => 3, 'msg' => 'export error'];
+        }
+        $url = $r['url'];
+        $result = ['code'=>0,'msg'=>'ok','data'=>['url'=>$url]];
+        return $result;
     }
 }
